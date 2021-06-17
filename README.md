@@ -10,6 +10,7 @@ You will need to add your own `config.py` if you would like to fork this repo an
 * `COMMAND_CHANNEL`: The channel where the Admins can interact with the bot separately from the channel above.
 * `CLASS_SPECIFIERS`: The class acronyms before the listing number.
 * `MAJORS`: A dictionary of key-value pairs, where the key is the exact name of the major role, and the value is the ID of the role.
+* `OTHERS`: A dictionary of key-value pairs, where the key is the exact name of the role, and the value is the ID of the role.
 * `ADD`: A string identifying the `add` command.
 * `REMOVE`: A string identifying the `remove` command.
 * `COMMANDS`: A list containing `ADD` and `REMOVE`.

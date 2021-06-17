@@ -48,8 +48,8 @@ async def handle_roles(args, action, message):
                     else:
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
-        elif word in config.MAJORS:
-            role = get(roles, id=config.MAJORS.get(word))
+        elif word in config.MAJORS or word in config.OTHERS:
+            role = get(roles, id=config.MAJORS.get(word) if word in config.MAJORS else config.OTHERS.get(word))
             if action == config.ADD:
                 await message.author.add_roles(role)
             else:
@@ -100,7 +100,6 @@ async def on_message(message):
                     return
             await message.author.send("Sorry, but `" + words[0] + "` is not a valid command!")
             await message.delete()
-            # await client.process_commands(message)
             return
         else:
             command = config.ADD if words[0].lower() == config.ADD else config.REMOVE
