@@ -85,7 +85,11 @@ async def on_ready():
 @client.event
 async def on_message(message):
     try:
-        if (message.author == client.user) or (message.channel.id != config.CHANNEL_ID):
+        if (message.author == client.user) or (message.channel.id != config.CHANNEL_ID) or (message.channel.id != config.COMMAND_CHANNEL):
+            return
+
+        if message.channel.id == config.COMMAND_CHANNEL:
+            await client.process_commands(message)
             return
 
         words = message.content.split(' ')
@@ -96,15 +100,19 @@ async def on_message(message):
                     return
             await message.author.send("Sorry, but `" + words[0] + "` is not a valid command!")
             await message.delete()
-            await client.process_commands(message)
+            # await client.process_commands(message)
             return
         else:
             command = config.ADD if words[0].lower() == config.ADD else config.REMOVE
 
         await handle_roles(words[1:], command, message)
     except Exception:
-        await message.channel.send("Oh no, I threw an error! <@262043915081875456>")
-        await message.channel.send("```" + get_exception() + "```")
+        channel = client.get_channel(854914587584626701)
+        channel.send("```" + get_exception() + "```")
+        await message.author.send("An error occured when processing your request:")
+        await message.author.send("```" + get_exception() + "```")
+        await message.author.send(
+            "Your roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
         print(get_exception())
 
 
@@ -153,6 +161,25 @@ class Commands(commands.Cog):
     async def ping(self):
         """Shows the current ping for the bot."""
         await self.send(f"Pong! (`{str(round(client.latency, 3))} s`)")
+
+    @client.command()
+    @commands.has_role(712353676299075704)
+    async def announcement(self):
+        """Allows an announcement from the Admins to be posted without the bot deleting the message."""
+        return
+
+    @client.event
+    async def on_command_error(self, error):
+        """Global command error handler."""
+        if isinstance(error, discord.ext.commands.MissingRole):
+            await self.author.send("Oops, it looks like you don't have the correct role for running this!")
+        else:
+            await self.author.send("An error occured when processing your request:")
+            await self.author.send(error)
+            await self.author.send("Your roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
+        await self.message.delete()
+        channel = client.get_channel(854914587584626701)
+        await channel.send(error)
 
 
 client.run(config.TOKEN)
