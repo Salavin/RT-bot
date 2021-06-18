@@ -78,6 +78,29 @@ async def handle_roles(args, action, message):
     await message.delete()
 
 
+async def handle_errors(user, error):
+    """
+    Handles any errors by sending an error message to the user and also posting an error to the error channel for the admins to view.
+    :param user: The user that triggered the error.
+    :param error: The error.
+    """
+    await user.send(f"An error occurred when processing your request:\n```{error}```\nYour roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
+    channel = client.get_channel(config.ERROR_CHANNEL)
+    p = subprocess.Popen("date", stdout=subprocess.PIPE, shell=True)
+    (output, _) = p.communicate()
+    date = "`" + str(output)[2: -3] + "`"
+    embed = discord.Embed(
+        type="rich",
+        description=f"At {date}, {user.name} triggered the following error:\n```{error}```"
+    )
+    embed.set_author(
+        name=user.name + "#" + user.discriminator,
+        icon_url=str(user.avatar_url))
+
+    await channel.send(embed=embed)
+    print(error)
+
+
 @client.event
 async def on_ready():
     print("Logged in as {0.user}".format(client))
@@ -107,13 +130,7 @@ async def on_message(message):
 
         await handle_roles(words[1:], command, message)
     except Exception:
-        channel = client.get_channel(config.ERROR_CHANNEL)
-        await channel.send("```" + get_exception() + "```")
-        await message.author.send("An error occured when processing your request:")
-        await message.author.send("```" + get_exception() + "```")
-        await message.author.send(
-            "Your roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
-        print(get_exception())
+        await handle_errors(message.author, get_exception())
 
 
 class Commands(commands.Cog):
@@ -172,14 +189,10 @@ class Commands(commands.Cog):
     async def on_command_error(self, error):
         """Global command error handler."""
         if isinstance(error, discord.ext.commands.MissingRole):
-            await self.author.send("Oops, it looks like you don't have the correct role for running this!")
+            await handle_errors(self.author, "You do not have permission to run this command.")
         else:
-            await self.author.send("An error occured when processing your request:")
-            await self.author.send(error)
-            await self.author.send("Your roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
+            await handle_errors(self.author, error)
         await self.message.delete()
-        channel = client.get_channel(config.ERROR_CHANNEL)
-        await channel.send(error)
 
 
 client.run(config.TOKEN)
