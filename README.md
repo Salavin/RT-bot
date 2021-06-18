@@ -8,11 +8,6 @@ You will need to add your own `config.py` if you would like to fork this repo an
 * `TOKEN`: This is the token that you get when you create your bot. To see how to create your own bot and how to find your token, check out [this tutorial](https://discordpy.readthedocs.io/en/latest/discord.html).
 * `CHANNEL_ID`: The channel that the bot will listen for implicit commands in (without the `.` command prefix).
 * `COMMAND_CHANNEL`: The channel where the Admins can interact with the bot separately from the channel above.
-* `CLASS_SPECIFIERS`: The class acronyms before the listing number.
-* `MAJORS`: A dictionary of key-value pairs, where the key is the exact name of the major role, and the value is the ID of the role.
-* `OTHERS`: A dictionary of key-value pairs, where the key is the exact name of the role, and the value is the ID of the role.
-* `ADD`: A string identifying the `add` command.
-* `REMOVE`: A string identifying the `remove` command.
-* `COMMANDS`: A list containing `ADD` and `REMOVE`.
+* `ERROR_CHANNEL`: The channel where the bot will throw errors.
 ## Contributing
 If you are from the Runtime Terror server, and you would like to contribute to this bot, please create an issue under the "Issues" tab.

@@ -8,6 +8,7 @@ import discord
 from discord.utils import get
 from discord.ext import commands
 import config
+import constants
 
 client = commands.Bot(command_prefix='.', help_command=None)
 
@@ -43,14 +44,14 @@ async def handle_roles(args, action, message):
                 newWord = word.upper()
             for role in roles:
                 if role.name == newWord:
-                    if action == config.ADD:
+                    if action == constants.ADD:
                         await message.author.add_roles(role)
                     else:
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
-        elif word in config.MAJORS or word in config.OTHERS:
-            role = get(roles, id=config.MAJORS.get(word) if word in config.MAJORS else config.OTHERS.get(word))
-            if action == config.ADD:
+        elif word in constants.MAJORS or word in constants.OTHERS:
+            role = get(roles, id=constants.MAJORS.get(word) if word in constants.MAJORS else constants.OTHERS.get(word))
+            if action == constants.ADD:
                 await message.author.add_roles(role)
             else:
                 await message.author.remove_roles(role)
@@ -61,13 +62,13 @@ async def handle_roles(args, action, message):
     messageString = ""
     if successfulRoles:
         messageString += "Successfully {verb} the following role(s):".format(
-            verb="added" if action == config.ADD else "removed")
+            verb="added" if action == constants.ADD else "removed")
         for role in successfulRoles:
             messageString += " `{role}`,".format(role=role)
         messageString = messageString[:-1] + '\n'
     if unsuccessfulRoles:
         messageString += "Had problems {verb} the following role(s):".format(
-            verb="adding" if action == config.ADD else "removing")
+            verb="adding" if action == constants.ADD else "removing")
         for role in unsuccessfulRoles:
             messageString += " `{role}`,".format(role=role)
         messageString = messageString[
@@ -93,7 +94,7 @@ async def on_message(message):
             return
 
         words = message.content.split(' ')
-        if words[0].lower() not in config.COMMANDS:
+        if words[0].lower() not in constants.COMMANDS:
             for command in client.commands:
                 if words[0][1:] == command.name or words[0][1:] in command.aliases:
                     await client.process_commands(message)
@@ -102,12 +103,12 @@ async def on_message(message):
             await message.delete()
             return
         else:
-            command = config.ADD if words[0].lower() == config.ADD else config.REMOVE
+            command = constants.ADD if words[0].lower() == constants.ADD else constants.REMOVE
 
         await handle_roles(words[1:], command, message)
     except Exception:
-        channel = client.get_channel(854914587584626701)
-        channel.send("```" + get_exception() + "```")
+        channel = client.get_channel(config.ERROR_CHANNEL)
+        await channel.send("```" + get_exception() + "```")
         await message.author.send("An error occured when processing your request:")
         await message.author.send("```" + get_exception() + "```")
         await message.author.send(
@@ -126,7 +127,7 @@ class Commands(commands.Cog):
 
         Adds roles to a user based on the list of roles given.
         """
-        await handle_roles(list(set([i for i in args])), config.ADD, self.message)
+        await handle_roles(list(set([i for i in args])), constants.ADD, self.message)
 
     @client.command(aliases=["rm"], brief="Removes roles from a user based on the list of roles given.")
     async def remove(self, *args):
@@ -135,7 +136,7 @@ class Commands(commands.Cog):
 
         Removes roles from a user based on the list of roles given.
         """
-        await handle_roles(list(set([i for i in args])), config.REMOVE, self.message)
+        await handle_roles(list(set([i for i in args])), constants.REMOVE, self.message)
 
     @client.command()
     @commands.has_role(712353676299075704)
@@ -177,7 +178,7 @@ class Commands(commands.Cog):
             await self.author.send(error)
             await self.author.send("Your roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
         await self.message.delete()
-        channel = client.get_channel(854914587584626701)
+        channel = client.get_channel(config.ERROR_CHANNEL)
         await channel.send(error)
 
 
