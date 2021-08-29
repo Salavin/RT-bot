@@ -37,14 +37,13 @@ async def handle_roles(args, action, message):
     unsuccessfulRoles = []
 
     for word in args:
-        word = word.upper()
-        if '-' in word and word.split('-')[0] in constants.CLASS_SPECIFIERS:
+        if '-' in word and word.split('-')[0].upper() in constants.CLASS_SPECIFIERS:
             if "491" in word or "492" in word:  # Special cases for Senior Design classes
                 newWord = "SE/COMS/CPRE/EE-" + "491" if "491" in word else "492"
             elif word == "CPRE-430" or word == "CPRE-530":
                 newWord = "CPRE-430/530"  # Special case for CPRE-430/530
             else:
-                newWord = word  # Could I have just overwritten word? Yes. Am I gonna change it now? No.
+                newWord = word.upper()
             for role in roles:
                 if role.name == newWord:
                     if action == constants.ADD:
@@ -52,7 +51,7 @@ async def handle_roles(args, action, message):
                     else:
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
-        elif word in constants.MAJORS or word in constants.OTHERS:
+        elif word.upper() in constants.MAJORS or word in constants.OTHERS:
             role = get(roles, id=constants.MAJORS.get(word) if word in constants.MAJORS else constants.OTHERS.get(word))
             if action == constants.ADD:
                 await message.author.add_roles(role)
