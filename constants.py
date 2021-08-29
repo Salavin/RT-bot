@@ -12,7 +12,8 @@ OTHERS = {
     "Gamers": 761764627377029120,
     "MovieWatcher": 750880017390764062,
     "PluggedIn": 750913471259869254,
-    "Alumnus": 745267379897892914
+    "Alumnus": 745267379897892914,
+    "Helper": 745404656586326116
 }
 ADD = "add"
 REMOVE = "remove"
