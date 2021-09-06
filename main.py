@@ -52,7 +52,7 @@ async def handle_roles(args, action, message):
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
         elif word.upper() in constants.MAJORS or word.upper() in constants.OTHERS:
-            role = get(roles, id=constants.MAJORS.get(word.upper()) if word in constants.MAJORS else constants.OTHERS.get(word.upper()))
+            role = get(roles, id=constants.MAJORS.get(word.upper()) if word.upper() in constants.MAJORS else constants.OTHERS.get(word.upper()))
             if action == constants.ADD:
                 await message.author.add_roles(role)
             else:
