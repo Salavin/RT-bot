@@ -41,17 +41,22 @@ async def handle_roles(args, action, message):
         if '-' in word and word.split('-')[0].upper() in constants.CLASS_SPECIFIERS:
             if "491" in word or "492" in word:  # Special cases for Senior Design classes
                 newWord = "SE/COMS/CPRE/EE-" + "491" if "491" in word else "492"
-            elif word == "CPRE-430" or word == "CPRE-530":
+            elif word.upper() == "CPRE-430" or word.upper() == "CPRE-530":
                 newWord = "CPRE-430/530"  # Special case for CPRE-430/530
             else:
                 newWord = word.upper()
+            successfulRoleFound = False
             for role in roles:
                 if role.name == newWord:
+                    successfulRoleFound = True
                     if action == constants.ADD:
                         await message.author.add_roles(role)
                     else:
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
+                    break
+            if not successfulRoleFound:
+                unsuccessfulRoles.append(word)
         elif word.upper() in constants.MAJORS or word.upper() in constants.OTHERS:
             role = get(roles, id=constants.MAJORS.get(word.upper()) if word.upper() in constants.MAJORS else constants.OTHERS.get(word.upper()))
             if action == constants.ADD:
