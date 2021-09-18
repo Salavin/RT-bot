@@ -39,7 +39,7 @@ async def handle_roles(args, action, message):
     for word in args:
         if '-' in word and word.split('-')[0].upper() in constants.CLASS_SPECIFIERS:
             if "491" in word or "492" in word:  # Special cases for Senior Design classes
-                newWord = "SE/COMS/CPRE/EE-" + "491" if "491" in word else "492"
+                newWord = "SE/COMS/CPRE/EE-491" if "491" in word else "SE/COMS/CPRE/EE-492"
             elif word == "CPRE-430" or word == "CPRE-530":
                 newWord = "CPRE-430/530"  # Special case for CPRE-430/530
             else:
