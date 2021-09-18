@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 import psutil
+from datetime import datetime
 
 import discord
 from discord.utils import get
@@ -40,17 +41,22 @@ async def handle_roles(args, action, message):
         if '-' in word and word.split('-')[0].upper() in constants.CLASS_SPECIFIERS:
             if "491" in word or "492" in word:  # Special cases for Senior Design classes
                 newWord = "SE/COMS/CPRE/EE-491" if "491" in word else "SE/COMS/CPRE/EE-492"
-            elif word == "CPRE-430" or word == "CPRE-530":
+            elif word.upper() == "CPRE-430" or word.upper() == "CPRE-530":
                 newWord = "CPRE-430/530"  # Special case for CPRE-430/530
             else:
                 newWord = word.upper()
+            successfulRoleFound = False
             for role in roles:
                 if role.name == newWord:
+                    successfulRoleFound = True
                     if action == constants.ADD:
                         await message.author.add_roles(role)
                     else:
                         await message.author.remove_roles(role)
                     successfulRoles.append(word)
+                    break
+            if not successfulRoleFound:
+                unsuccessfulRoles.append(word)
         elif word.upper() in constants.MAJORS or word.upper() in constants.OTHERS:
             role = get(roles, id=constants.MAJORS.get(word.upper()) if word.upper() in constants.MAJORS else constants.OTHERS.get(word.upper()))
             if action == constants.ADD:
@@ -80,7 +86,7 @@ async def handle_roles(args, action, message):
     await message.delete()
 
 
-async def handle_errors(user, error):
+async def handle_errors(user, error, message):
     """
     Handles any errors by sending an error message to the user and also posting an error to the error channel for the admins to view.
     :param user: The user that triggered the error.
@@ -88,12 +94,10 @@ async def handle_errors(user, error):
     """
     await user.send(f"An error occurred when processing your request:\n```{error}```\nYour roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
     channel = client.get_channel(config.ERROR_CHANNEL)
-    p = subprocess.Popen("date", stdout=subprocess.PIPE, shell=True)
-    (output, _) = p.communicate()
-    date = "`" + str(output)[2: -3] + "`"
+    date = datetime.now()
     embed = discord.Embed(
         type="rich",
-        description=f"At {date}, {user.name} triggered the following error:\n```{error}```"
+        description=f"At `{date}`, {user.name}, with the input `{message}`, triggered the following error:\n```{error}```"
     )
     embed.set_author(
         name=user.name + "#" + user.discriminator,
@@ -132,7 +136,7 @@ async def on_message(message):
 
         await handle_roles(words[1:], command, message)
     except Exception:
-        await handle_errors(message.author, get_exception())
+        await handle_errors(message.author, get_exception(), message.content)
 
 
 class Commands(commands.Cog):
