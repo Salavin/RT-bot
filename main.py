@@ -10,6 +10,7 @@ from discord.utils import get
 from discord.ext import commands
 import config
 import constants
+import re
 
 client = commands.Bot(command_prefix='.', help_command=None)
 
@@ -160,6 +161,34 @@ class Commands(commands.Cog):
         Removes roles from a user based on the list of roles given.
         """
         await handle_roles(list(set([i for i in args])), constants.REMOVE, self.message)
+
+    @client.command(brief="Makes a poll")
+    async def poll(self, *, arg):
+        title = re.findall("{(.+)}", arg)
+        options = re.findall("(?:\s*\[([^\]]+))+", arg)
+
+        if len(title) == 0:
+            await self.send("Invalid title")
+            return
+        if len(options) == 0 or len(options) > 26:
+            await self.send("Invalid args")
+            return
+
+        description = ""
+        index = 0
+        unicode = ord('🇦')
+        for option in options:
+            description += f"{chr(unicode)} {option}\n\n"
+            index += 1
+            unicode += 1
+        embed = discord.Embed(title=title[0], description=description)
+        message = await self.send(embed=embed)
+
+        unicode = ord('🇦')
+        for i in range(index):
+            await message.add_reaction(f'{chr(unicode)}')
+            unicode += 1
+
 
     @client.command()
     @commands.has_role(712353676299075704)
