@@ -83,7 +83,10 @@ async def handle_roles(args, action, message):
         messageString = messageString[
                         :-1] + "\nCheck for any typos you may have made, and check to see if the role is on the list. If it's not, ping an admin, and they can add it for you."
     messageString.rstrip('\n')
-    await message.author.send(messageString)
+    try:
+        await message.author.send(messageString)
+    except discord.errors.Forbidden:
+        await client.get_channel(config.ERROR_CHANNEL).send(f"Unable to send messages to user `{message.author.name + '#' + message.author.discriminator}`")
     await message.delete()
 
 
@@ -93,7 +96,11 @@ async def handle_errors(user, error, message):
     :param user: The user that triggered the error.
     :param error: The error.
     """
-    await user.send(f"An error occurred when processing your request:\n```{error}```\nYour roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
+    try:
+        await user.send(f"An error occurred when processing your request:\n```{error}```\nYour roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
+    except discord.errors.Forbidden:
+        await client.get_channel(config.ERROR_CHANNEL).send(f"Unable to send messages to user `{user.name + '#' + user.discriminator}`")
+
     channel = client.get_channel(config.ERROR_CHANNEL)
     date = datetime.now()
     embed = discord.Embed(
@@ -129,7 +136,12 @@ async def on_message(message):
                 if words[0][1:] == command.name or words[0][1:] in command.aliases:
                     await client.process_commands(message)
                     return
-            await message.author.send("Sorry, but `" + words[0] + "` is not a valid command!")
+            try:
+                await message.author.send("Sorry, but `" + words[0] + "` is not a valid command!")
+            except discord.errors.Forbidden:
+                await client.get_channel(config.ERROR_CHANNEL).send(
+                    f"Unable to send messages to user `{message.author.name + '#' + message.author.discriminator}`")
+
             await message.delete()
             return
         else:
