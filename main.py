@@ -95,6 +95,7 @@ async def handle_errors(user, error, message):
     Handles any errors by sending an error message to the user and also posting an error to the error channel for the admins to view.
     :param user: The user that triggered the error.
     :param error: The error.
+    :param message: The message that triggered the error.
     """
     try:
         await user.send(f"An error occurred when processing your request:\n```{error}```\nYour roles may or may not have been successfully added. If the problem persists, please DM <@262043915081875456>.")
@@ -157,25 +158,30 @@ class Commands(commands.Cog):
         self.client = client
 
     @client.command(brief="Adds roles to a user based on the list of roles given.")
-    async def add(self, *args):
+    async def add(self: discord.ext.commands.Context, *args):
         """
-        Usage: `!add <name(s) of role(s)>`
+        Usage: `.add <name(s) of role(s)>`
 
         Adds roles to a user based on the list of roles given.
         """
         await handle_roles(list(set([i for i in args])), constants.ADD, self.message)
 
     @client.command(aliases=["rm"], brief="Removes roles from a user based on the list of roles given.")
-    async def remove(self, *args):
+    async def remove(self: discord.ext.commands.Context, *args):
         """
-        Usage: `!(remove | rm) <name(s) of role(s)>`
+        Usage: `.(remove | rm) <name(s) of role(s)>`
 
         Removes roles from a user based on the list of roles given.
         """
         await handle_roles(list(set([i for i in args])), constants.REMOVE, self.message)
 
-    @client.command(brief="Makes a poll")
-    async def poll(self, *, arg):
+    @client.command(brief="Makes a poll.")
+    async def poll(self: discord.ext.commands.Context, *, arg):
+        """
+        Usage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]
+
+        Creates a poll with a given title and options, and adds the proper react emotes.
+        """
         title = re.findall("{(.+)}", arg)
         options = re.findall("(?:\s*\[([^\]]+))+", arg)
 
@@ -201,10 +207,9 @@ class Commands(commands.Cog):
             await message.add_reaction(f'{chr(unicode)}')
             unicode += 1
 
-
     @client.command()
     @commands.has_role(712353676299075704)
-    async def restart(self):
+    async def restart(self: discord.ext.commands.Context):
         """Restarts the bot, given the user has the correct role."""
         await self.send("Restarting...")
         print("Shutting down")
@@ -212,7 +217,7 @@ class Commands(commands.Cog):
 
     @client.command()
     @commands.has_role(712353676299075704)
-    async def stats(self):
+    async def stats(self: discord.ext.commands.Context):
         """Shows the uptime and memory usage for the bot."""
         p = subprocess.Popen("uptime", stdout=subprocess.PIPE, shell=True)
         (output, _) = p.communicate()
@@ -222,7 +227,7 @@ class Commands(commands.Cog):
 
     @client.command()
     @commands.has_role(712353676299075704)
-    async def ping(self):
+    async def ping(self: discord.ext.commands.Context):
         """Shows the current ping for the bot."""
         await self.send(f"Pong! (`{str(round(client.latency, 3))} s`)")
 
@@ -233,7 +238,7 @@ class Commands(commands.Cog):
         return
 
     @client.event
-    async def on_command_error(self, error):
+    async def on_command_error(self: discord.ext.commands.Context, error):
         """Global command error handler."""
         if isinstance(error, discord.ext.commands.MissingRole):
             await handle_errors(self.author, "You do not have permission to run this command.", self.message)
