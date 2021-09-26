@@ -1,3 +1,5 @@
+#!/bin/python
+
 import linecache
 import os
 import subprocess
@@ -124,7 +126,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
     try:
-        if (message.author == client.user) or (message.channel.id not in config.VALID_CHANNELS):
+        if message.author == client.user or message.channel.id not in config.VALID_CHANNELS:
             return
 
         if message.channel.id in config.COMMAND_CHANNELS:
@@ -178,34 +180,39 @@ class Commands(commands.Cog):
     @client.command(brief="Makes a poll.")
     async def poll(self: discord.ext.commands.Context, *, arg):
         """
-        Usage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`
+        Usage: `.poll <poll title> | <poll option 1> |<emoji> <poll option 2> | ... <poll option n (up to 20)>`
 
-        Creates a poll with a given title and options, and adds the proper react emotes.
+        Creates a poll with a given title and options, and adds the proper react emotes if supplied.
         """
-        title = re.findall("{(.+)}", arg)
-        options = re.findall("(?:\s*\[([^\]]+))+", arg)
 
-        if len(title) == 0:
-            await self.send("Invalid title\nUsage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`")
+        sections = arg.split('|')
+        reacts = []
+
+        if len(sections[0]) == 0:
+            await self.send("post")
             return
-        if len(options) == 0 or len(options) > 26:
-            await self.send("Invalid args\nUsage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`")
+        if len(sections) > 22:
+            await self.send(f"Polls can only have up to 20 options due to how discord works. Your 20th option was '{sections[20]}'")
             return
 
         description = ""
         index = 0
         unicode = ord('🇦')
-        for option in options:
-            description += f"{chr(unicode)} {option}\n\n"
+        for option in sections[1:]:
+            if not option[0].isascii():
+                reacts.append(option[0])
+                option = option[1:]
+            else:
+                reacts.append(chr(unicode))
+                unicode += 1
+            description += f"{reacts[index]} {option.strip()}\n\n"
             index += 1
-            unicode += 1
-        embed = discord.Embed(title=title[0], description=description)
+        embed = discord.Embed(title=sections[0], description=description)
+        embed.set_footer(text = "This bot is open-source under RT-bot on github, not that you should hack it or anything baka")
         message = await self.send(embed=embed)
 
-        unicode = ord('🇦')
         for i in range(index):
-            await message.add_reaction(f'{chr(unicode)}')
-            unicode += 1
+            await message.add_reaction(f'{reacts[i]}')
 
     @client.command()
     @commands.has_role(712353676299075704)
