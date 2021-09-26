@@ -236,9 +236,9 @@ class Commands(commands.Cog):
     async def on_command_error(self, error):
         """Global command error handler."""
         if isinstance(error, discord.ext.commands.MissingRole):
-            await handle_errors(self.author, "You do not have permission to run this command.")
+            await handle_errors(self.author, "You do not have permission to run this command.", self.message)
         else:
-            await handle_errors(self.author, error)
+            await handle_errors(self.author, error, self.message)
         await self.message.delete()
 
 
