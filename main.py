@@ -178,7 +178,7 @@ class Commands(commands.Cog):
     @client.command(brief="Makes a poll.")
     async def poll(self: discord.ext.commands.Context, *, arg):
         """
-        Usage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]
+        Usage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`
 
         Creates a poll with a given title and options, and adds the proper react emotes.
         """
@@ -186,10 +186,10 @@ class Commands(commands.Cog):
         options = re.findall("(?:\s*\[([^\]]+))+", arg)
 
         if len(title) == 0:
-            await self.send("Invalid title")
+            await self.send("Invalid title\nUsage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`")
             return
         if len(options) == 0 or len(options) > 26:
-            await self.send("Invalid args")
+            await self.send("Invalid args\nUsage: `.poll {<poll title>} [<poll option 1>] [<poll option 2>] ... [<poll option n (up to 26)>]`")
             return
 
         description = ""
