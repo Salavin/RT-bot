@@ -126,10 +126,10 @@ async def on_ready():
 @client.event
 async def on_message(message):
     try:
-        if message.author == client.user or message.channel.id not in config.VALID_CHANNELS:
+        if message.author == client.user or message.channel.id not in constants.VALID_CHANNELS:
             return
 
-        if message.channel.id in config.COMMAND_CHANNELS:
+        if message.channel.id in constants.COMMAND_CHANNELS:
             await client.process_commands(message)
             return
 

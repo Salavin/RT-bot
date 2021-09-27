@@ -1,3 +1,5 @@
+import config
+
 CLASS_SPECIFIERS = ["SE", "COMS", "CPRE", "SD", "STAT", "EE"]
 MAJORS = {
     "SE": 746125179842854922,
@@ -19,3 +21,5 @@ OTHERS = {
 ADD = "add"
 REMOVE = "remove"
 COMMANDS = [ADD, REMOVE, "rm"]
+VALID_CHANNELS = [config.CHANNEL_ID, config.COMMAND_CHANNEL, config.POLL_CHANNEL]
+COMMAND_CHANNELS = [config.COMMAND_CHANNEL, config.POLL_CHANNEL]
