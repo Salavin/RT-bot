@@ -2,6 +2,7 @@
 
 import linecache
 import os
+import random
 import subprocess
 import sys
 import psutil
@@ -208,7 +209,7 @@ class Commands(commands.Cog):
             description += f"{reacts[index]} {option.strip()}\n\n"
             index += 1
         embed = discord.Embed(title=sections[0], description=description)
-        embed.set_footer(text = "This bot is open-source under RT-bot on github, not that you should hack it or anything baka")
+        embed.set_footer(text=random.choice(constants.FOOTERS))
         message = await self.send(embed=embed)
 
         for i in range(index):

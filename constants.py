@@ -23,3 +23,9 @@ REMOVE = "remove"
 COMMANDS = [ADD, REMOVE, "rm"]
 VALID_CHANNELS = [config.CHANNEL_ID, config.COMMAND_CHANNEL, config.POLL_CHANNEL]
 COMMAND_CHANNELS = [config.COMMAND_CHANNEL, config.POLL_CHANNEL]
+
+FOOTERS = [
+    "This bot is open-source under RT-bot on github, not that you should hack it or anything, baka",
+    "Don't let eye strain ruin your day. Protect your eyes from harmful blue light using Bakery Gaming's glasses. Use code 'plzDontThisIsAJoke' for 420% off your order.",
+    "One out of ten hackers agree - binary is better!"
+]
